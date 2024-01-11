@@ -45,7 +45,7 @@ public static class GrabberExtension
 
             client.Timeout = TimeSpan.FromHours(24);
             var videoBytes = await client.DownloadFileWithProgressAsync(highestQualityOriginalUri, progressReporter);
-            //var videoBytes = await client.GetByteArrayAsync(highestQualityOriginalUri);
+
             Console.WriteLine($"Finished downloading {authTitle}.");
             await File.WriteAllBytesAsync(tempFileName, videoBytes);
         }
