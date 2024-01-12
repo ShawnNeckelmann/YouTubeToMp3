@@ -1,27 +1,44 @@
+using Cocona;
 using DotNetTools.SharpGrabber;
-using YouTubeToMp3SharpGrabber;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using YouTubeToMp3.Services;
+using YouTubeToMp3.Services.YtData;
+
+namespace YouTubeToMp3;
 
 internal class Program
 {
-    private static async Task Main(string[] args)
+    private static void Main(string[] args)
     {
-        if (args.Length == 0)
-        {
-            Console.WriteLine("No URLs passed to convert.");
-            return;
-        }
+        CoconaApp.CreateHostBuilder()
+            .ConfigureLogging(logging => { logging.AddDebug(); })
+            .ConfigureServices(services =>
+            {
+                services.AddSingleton(provider =>
+                {
+                    // Build a multi-grabber
+                    var grabber = GrabberBuilder.New()
+                        .UseDefaultServices()
+                        .AddYouTube()
+                        .Build();
 
-        // Build a multi-grabber
-        var grabber = GrabberBuilder.New()
-            .UseDefaultServices()
-            .AddYouTube()
-            .Build();
+                    return grabber;
+                });
 
-        var ts = args
-            .Select(s => new Uri(s))
-            .Select(uri => grabber.DownloadAndRipYouTubeVideo(uri));
+                services.AddHttpClient();
+                services.AddTransient<YouTubeFacade>();
+                services.AddTransient<AudioRipper>();
+                services.AddTransient<ConvertYouTubeVideoToMp3>();
+                services.AddTransient<Application>();
+            })
+            .Run<Program>(args);
+    }
 
-
-        await Task.WhenAll(ts);
+    public async Task Run([FromService] Application app, [FromService] ILogger<Program> loggger,
+        [Argument] IEnumerable<string> args)
+    {
+        loggger.LogInformation("Received some arguments...");
+        await app.Run(args);
     }
 }
