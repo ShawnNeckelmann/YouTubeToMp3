@@ -2,7 +2,7 @@
 using DotNetTools.SharpGrabber.Grabbed;
 using YouTubeToMp3.Extensions;
 
-namespace YouTubeToMp3.Services.YtData;
+namespace YouTubeToMp3.Services.Facade;
 
 public class YouTubeFacade
 {

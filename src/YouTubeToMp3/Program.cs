@@ -3,7 +3,7 @@ using DotNetTools.SharpGrabber;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using YouTubeToMp3.Services;
-using YouTubeToMp3.Services.YtData;
+using YouTubeToMp3.Services.Facade;
 
 namespace YouTubeToMp3;
 

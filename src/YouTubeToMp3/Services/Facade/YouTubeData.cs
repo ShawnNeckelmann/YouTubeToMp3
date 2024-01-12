@@ -1,4 +1,4 @@
-﻿namespace YouTubeToMp3.Services.YtData;
+﻿namespace YouTubeToMp3.Services.Facade;
 
 public class YouTubeData
 {
