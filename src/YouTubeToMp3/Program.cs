@@ -12,10 +12,14 @@ internal class Program
     private static void Main(string[] args)
     {
         CoconaApp.CreateHostBuilder()
-            .ConfigureLogging(logging => { logging.AddDebug(); })
+            .ConfigureLogging(logging =>
+            {
+                logging.AddConsole();
+                logging.AddDebug();
+            })
             .ConfigureServices(services =>
             {
-                services.AddSingleton(provider =>
+                services.AddSingleton(_ =>
                 {
                     // Build a multi-grabber
                     var grabber = GrabberBuilder.New()
@@ -36,7 +40,8 @@ internal class Program
     }
 
     public async Task Run([FromService] Application app, [FromService] ILogger<Program> loggger,
-        [Argument] IEnumerable<string> args)
+        [Argument("A space delimited list of YouTube URLs to rip.")]
+        IEnumerable<string> args)
     {
         loggger.LogInformation("Received some arguments...");
         await app.Run(args);
