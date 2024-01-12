@@ -13,6 +13,7 @@
     <PackageReference Include="NReco.VideoConverter" Version="1.2.1" />
     <PackageReference Include="SharpGrabber" Version="2.1.1" />
     <PackageReference Include="SharpGrabber.YouTube" Version="1.5.0" />
+    <PackageReference Include="Spectre.Console" Version="0.48.0" />
   </ItemGroup>
 
 </Project>
