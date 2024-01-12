@@ -1,4 +1,4 @@
-﻿namespace YouTubeToMp3SharpGrabber;
+﻿namespace YouTubeToMp3.Extensions;
 
 public static class HttpClientExtension
 {
