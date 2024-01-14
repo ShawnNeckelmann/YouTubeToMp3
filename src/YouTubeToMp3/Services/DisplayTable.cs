@@ -5,14 +5,12 @@ namespace YouTubeToMp3.Services;
 
 public class DisplayTable
 {
-    private const int ColumnIndex_Status = 2;
-    private const int ColumnIndex_Title = 1;
-    private const int ColumnIndex_URL = 0;
+    private const int ColumnIndexStatus = 2;
+    private const int ColumnIndexTitle = 1;
 
     private const int RefreshDelay = 100;
     private readonly Table _table;
     private readonly Dictionary<Uri, int> _urlRowNumberDictionary = new();
-    private bool _processingComplete;
 
 
     public DisplayTable()
@@ -47,31 +45,12 @@ public class DisplayTable
         _urlRowNumberDictionary.Add(asUri, _table.Rows.Count - 1);
     }
 
-    public void Complete(Uri url)
-    {
-        var rowNumber = RowNumber(url);
-        _table.UpdateCell(rowNumber, ColumnIndex_Status, "Complete");
-    }
-
-    private void Complete()
-    {
-        _processingComplete = true;
-    }
-
-    private void Remove(Uri uri)
-    {
-        _urlRowNumberDictionary.Remove(uri);
-        if (_urlRowNumberDictionary.Count == 0)
-        {
-            Complete();
-        }
-    }
 
     public async Task Render()
     {
         await AnsiConsole.Live(_table).StartAsync(async context =>
         {
-            while (!_processingComplete)
+            while (true)
             {
                 context.Refresh();
                 await Task.Delay(RefreshDelay);
@@ -90,20 +69,20 @@ public class DisplayTable
         SetStatus(url, exceptionMessage);
 
         var cellData = new Text(exceptionMessage, new Style(Color.Red, Color.Black));
-        _table.UpdateCell(rowNumber, ColumnIndex_Status, cellData);
+        _table.UpdateCell(rowNumber, ColumnIndexStatus, cellData);
     }
 
 
     public void SetStatus(Uri url, string status, YouTubeData data)
     {
         var rowNumber = RowNumber(url);
-        _table.UpdateCell(rowNumber, ColumnIndex_Title, data.DisplayTitle);
-        _table.UpdateCell(rowNumber, ColumnIndex_Status, status);
+        _table.UpdateCell(rowNumber, ColumnIndexTitle, data.DisplayTitle);
+        _table.UpdateCell(rowNumber, ColumnIndexStatus, status);
     }
 
     public void SetStatus(Uri url, string status)
     {
         var rowNumber = RowNumber(url);
-        _table.UpdateCell(rowNumber, ColumnIndex_Status, status);
+        _table.UpdateCell(rowNumber, ColumnIndexStatus, status);
     }
 }
