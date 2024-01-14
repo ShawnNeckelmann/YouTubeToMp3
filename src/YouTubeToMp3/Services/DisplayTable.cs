@@ -5,6 +5,10 @@ namespace YouTubeToMp3.Services;
 
 public class DisplayTable
 {
+    private const int ColumnStatus = 2;
+    private const int ColumnTitle = 1;
+
+    private const int ColumnURL = 0;
     private const int ColumnWidth = 1000;
     private const int RefreshDelay = 100;
     private readonly bool _processingComplete = false;
@@ -15,13 +19,12 @@ public class DisplayTable
     public DisplayTable()
     {
         _table = new Table().Centered();
-        
+
         _table.Border(TableBorder.Heavy);
         _table.AddColumn("[green]URL[/]").Width(ColumnWidth).Centered();
         _table.AddColumn("[fuchsia]Title[/]").Width(ColumnWidth).Centered();
         _table.AddColumn("[blue]Status[/]").Width(ColumnWidth).Centered();
         _table.Expand();
-
     }
 
     public void AddYouTubeVideo(string uri)
@@ -52,13 +55,13 @@ public class DisplayTable
     public void SetStatus(Uri url, string status, YouTubeData data)
     {
         var rowNumber = RowNumber(url);
-        _table.UpdateCell(rowNumber, 1, data.DisplayTitle);
-        _table.UpdateCell(rowNumber, 2, status);
+        _table.UpdateCell(rowNumber, ColumnTitle, data.DisplayTitle);
+        _table.UpdateCell(rowNumber, ColumnStatus, status);
     }
 
     public void SetStatus(Uri url, string status)
     {
         var rowNumber = RowNumber(url);
-        _table.UpdateCell(rowNumber, 2, status);
+        _table.UpdateCell(rowNumber, ColumnStatus, status);
     }
 }
