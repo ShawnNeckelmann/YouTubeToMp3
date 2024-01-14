@@ -30,7 +30,7 @@ public class DisplayTable
     public void AddYouTubeVideo(string uri)
     {
         var asUri = new Uri(uri);
-        _table.AddRow(asUri.ToString(), "Pending", "Pending");
+        _table.AddRow($"[link]{asUri}[/]", "Pending", "Pending");
         _urlRowNumberDictionary.Add(asUri, _table.Rows.Count - 1);
     }
 
