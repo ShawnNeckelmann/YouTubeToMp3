@@ -20,6 +20,12 @@ public class Application
         _convertYouTubeVideoToMp3.OnRetrievingYouTubeData += OnRetrievingYouTubeData;
         _convertYouTubeVideoToMp3.OnBegginingAudioRip += OnBegginingAudioRip;
         _convertYouTubeVideoToMp3.OnYouTubeDataRetrieved += OnYouTubeDataRetrieved;
+        _convertYouTubeVideoToMp3.OnAudioRipException += OnAudioRipException;
+    }
+
+    private void OnAudioRipException(object? sender, OnAudioRipExceptionEventArgs e)
+    {
+        _displayTable.SetException(e.Url, e.ExceptionMessage );
     }
 
     private void OnAudioRipComplete(object? sender, OnAudioRipCompleteEventArgs e)

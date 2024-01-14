@@ -32,11 +32,23 @@ public class ConvertYouTubeVideoToMp3
         OnDownloadComplete.Invoke(this, new OnDownloadCompleteEventArgs(uri));
 
         OnBegginingAudioRip.Invoke(this, new OnBegginingAudioRipEventArgs(uri));
-        _audioRipper.RipAudio(data, file, Environment.GetFolderPath(Environment.SpecialFolder.MyMusic));
+
+        try
+        {
+            _audioRipper.RipAudio(data, file, Environment.GetFolderPath(Environment.SpecialFolder.MyMusic));
+        }
+        catch (Exception e)
+        {
+            OnAudioRipException.Invoke(this, new OnAudioRipExceptionEventArgs(uri, e.Message));
+            return;
+        }
+
         OnAudioRipComplete.Invoke(this, new OnAudioRipCompleteEventArgs(uri));
     }
 
     public event EventHandler<OnAudioRipCompleteEventArgs> OnAudioRipComplete;
+
+    public event EventHandler<OnAudioRipExceptionEventArgs> OnAudioRipException;
 
     public event EventHandler<OnBegginingAudioRipEventArgs> OnBegginingAudioRip;
 
