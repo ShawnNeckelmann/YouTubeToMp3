@@ -11,9 +11,9 @@ public class DisplayTable
     private const int ColumnURL = 0;
     private const int ColumnWidth = 1000;
     private const int RefreshDelay = 100;
-    private readonly bool _processingComplete = false;
     private readonly Table _table;
     private readonly Dictionary<Uri, int> _urlRowNumberDictionary = new();
+    private bool _processingComplete;
 
 
     public DisplayTable()
@@ -24,7 +24,8 @@ public class DisplayTable
         _table.AddColumn("[green]URL[/]").Width(ColumnWidth).Centered();
         _table.AddColumn("[fuchsia]Title[/]").Width(ColumnWidth).Centered();
         _table.AddColumn("[blue]Status[/]").Width(ColumnWidth).Centered();
-        _table.Expand();
+
+        _table.Caption = new TableTitle("YouTube to MP3");
     }
 
     public void AddYouTubeVideo(string uri)
@@ -32,6 +33,26 @@ public class DisplayTable
         var asUri = new Uri(uri);
         _table.AddRow($"[link]{asUri}[/]", "Pending", "Pending");
         _urlRowNumberDictionary.Add(asUri, _table.Rows.Count - 1);
+    }
+
+    public void Complete(Uri url)
+    {
+        var rowNumber = RowNumber(url);
+        _table.UpdateCell(rowNumber, ColumnStatus, "Complete");
+    }
+
+    private void Complete()
+    {
+        _processingComplete = true;
+    }
+
+    private void Remove(Uri uri)
+    {
+        _urlRowNumberDictionary.Remove(uri);
+        if (_urlRowNumberDictionary.Count == 0)
+        {
+            Complete();
+        }
     }
 
     public async Task Render()
