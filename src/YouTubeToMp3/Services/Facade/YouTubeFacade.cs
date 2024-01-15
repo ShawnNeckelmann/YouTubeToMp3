@@ -6,7 +6,7 @@ namespace YouTubeToMp3.Services.Facade;
 public class YouTubeFacade
 {
     public async Task<string> DownloadYouTube(YouTubeData youTubeData,
-        Action<double?, YouTubeData> progressReport)
+        Action<double, YouTubeData> progressReport)
     {
         var tempFileName = Path.GetTempFileName();
         var youtube = new YoutubeClient();
