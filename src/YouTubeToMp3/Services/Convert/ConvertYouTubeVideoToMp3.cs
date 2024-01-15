@@ -26,7 +26,7 @@ public class ConvertYouTubeVideoToMp3
 
 
         var file = await _youTubeFacade.DownloadYouTube(data,
-            (totalDownloadSize, totalBytesRead, progressPercentage, authTitle) =>
+            (progressPercentage, authTitle) =>
                 OnDownloadProgress.Invoke(this, new OnDownloadProgressEventArgs(uri, progressPercentage)));
 
         OnDownloadComplete.Invoke(this, new OnDownloadCompleteEventArgs(uri));

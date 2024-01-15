@@ -2,7 +2,7 @@
   "profiles": {
     "YouTube -> Mp3": {
       "commandName": "Project",
-      "commandLineArgs": "https://www.youtube.com/watch?v=x96KZ2Gd2JY https://www.youtube.com/watch?v=Dy1M09MpgzA https://www.youtube.com/watch?v=2VSlLFC-xQ8 https://www.youtube.com/watch?v=DOgcePSytpE https://www.youtube.com/watch?v=6K4qdVj9JbA"
+      "commandLineArgs": "https://www.youtube.com/watch?v=x96KZ2Gd2JY"
     }
   }
 }

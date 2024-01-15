@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Cocona;
 using DotNetTools.SharpGrabber;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,7 +16,10 @@ internal class Program
         CoconaApp.CreateHostBuilder()
             .ConfigureLogging(logging =>
             {
+#if RELEASE
                 logging.ClearProviders();
+#endif
+
             })
             .ConfigureServices(services =>
             {
@@ -30,7 +34,10 @@ internal class Program
                     return grabber;
                 });
 
-                services.AddHttpClient();
+                services.AddHttpClient<HttpClient>(client =>
+                {
+                    client.Timeout = TimeSpan.FromHours(1);
+                });
                 services.AddTransient<YouTubeFacade>();
                 services.AddTransient<DisplayTable>();
                 services.AddTransient<AudioRipper>();

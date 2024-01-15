@@ -4,6 +4,8 @@ public class YouTubeData
 {
     public string Author { get; set; }
 
+    public string Container { get; set; }
+
     public string DisplayTitle => $"{Author} - {Title}";
 
     public string FileTitle
@@ -14,7 +16,6 @@ public class YouTubeData
             return retval;
         }
     }
-
 
     public Uri ResourceUri { get; set; }
 
