@@ -1,6 +1,4 @@
-using System.Diagnostics;
 using Cocona;
-using DotNetTools.SharpGrabber;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using YouTubeToMp3.Services;
@@ -14,30 +12,9 @@ internal class Program
     private static void Main(string[] args)
     {
         CoconaApp.CreateHostBuilder()
-            .ConfigureLogging(logging =>
-            {
-#if RELEASE
-                logging.ClearProviders();
-#endif
-
-            })
+            .ConfigureLogging(logging => { logging.ClearProviders(); })
             .ConfigureServices(services =>
             {
-                services.AddSingleton(_ =>
-                {
-                    // Build a multi-grabber
-                    var grabber = GrabberBuilder.New()
-                        .UseDefaultServices()
-                        .AddYouTube()
-                        .Build();
-
-                    return grabber;
-                });
-
-                services.AddHttpClient<HttpClient>(client =>
-                {
-                    client.Timeout = TimeSpan.FromHours(1);
-                });
                 services.AddTransient<YouTubeFacade>();
                 services.AddTransient<DisplayTable>();
                 services.AddTransient<AudioRipper>();
