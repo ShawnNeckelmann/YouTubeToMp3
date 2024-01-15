@@ -6,6 +6,7 @@ namespace YouTubeToMp3.Services.Facade;
 
 public class YouTubeFacade
 {
+    private static readonly List<string> InvalidContainers = ["mp4", "m4a"];
     private readonly IMultiGrabber _grabber;
     private readonly IHttpClientFactory _httpClientFactory;
 
@@ -16,16 +17,15 @@ public class YouTubeFacade
     }
 
     public async Task<string> DownloadYouTube(YouTubeData youTubeData,
-        Action<long?, long, double?, YouTubeData> progressReport)
+        Action<double?, YouTubeData> progressReport)
     {
-        var tempFileName = Path.GetTempFileName();
-
+        var tempFileName = Path.GetTempFileName() + "." + youTubeData.Container;
         using var client = _httpClientFactory.CreateClient();
+
         var progressReporter =
             new Progress<(long? totalDownloadSize, long totalBytesRead, double? progressPercentage)>(progress =>
             {
-                progressReport(progress.totalDownloadSize, progress.totalBytesRead,
-                    progress.progressPercentage, youTubeData);
+                progressReport(progress.progressPercentage, youTubeData);
             });
 
         var videoBytes = await client.DownloadFileWithProgressAsync(youTubeData.ResourceUri, progressReporter);
@@ -33,26 +33,45 @@ public class YouTubeFacade
         return tempFileName;
     }
 
+    private static (string Container, Uri Uri) GetAudioUri(GrabResult objects)
+    {
+        var list = objects.Resources<GrabbedMedia>()
+            .WhereHasAudio()
+            .Where(media => media.ResourceUri is not null && !InvalidContainers.Contains(media.Container))
+            .OrderByDescending(v => v.Resolution)
+            .ToList();
+
+        var first = list.First();
+        var retval = first.ResourceUri;
+        var container = first.Container;
+        return (container, retval);
+    }
+
+    private static string GetAuthor(IGrabResult result)
+    {
+        var @default = result.Resources.Select(grabbed => grabbed as dynamic).FirstOrDefault(d => d.Author is not null);
+        if (@default is null)
+        {
+            return "Unknown";
+        }
+
+        var retval = @default.Author;
+        return retval;
+    }
+
     public async Task<YouTubeData> GetYouTubeData(Uri uriYouTubeVideo)
     {
         var result = await _grabber.GrabAsync(uriYouTubeVideo);
-
-        var objects = result.Resources.Select(grabbed => grabbed as dynamic).ToList();
-        var authObj = objects.FirstOrDefault(d => d.Author is not null);
-        var author = "Unknown";
-
-        if (authObj is not null)
-        {
-            author = authObj.Author;
-        }
-
+        var author = GetAuthor(result);
+        var audioUri = GetAudioUri(result);
         var title = result.Title;
 
         return new YouTubeData
         {
             Author = author,
             Title = title,
-            ResourceUri = result.Resources<GrabbedMedia>().OrderByDescending(v => v.Resolution).Last().ResourceUri
+            ResourceUri = audioUri.Uri,
+            Container = audioUri.Container
         };
     }
 }

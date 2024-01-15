@@ -4,12 +4,15 @@ public class YouTubeData
 {
     public string Author { get; set; }
 
+    public string Container { get; set; }
+
+    public string DisplayTitle => $"{Author} - {Title}";
+
     public string FileTitle
     {
         get
         {
-            var title = $"{Author} - {Title}";
-            var retval = SanitizeFileName(title);
+            var retval = SanitizeFileName(DisplayTitle);
             return retval;
         }
     }
@@ -22,7 +25,6 @@ public class YouTubeData
     {
         // Replace invalid characters with an underscore or another preferred character.
         var retval = Path.GetInvalidFileNameChars().Aggregate(filename, (current, c) => current.Replace(c, '_'));
-
         return retval;
     }
 }

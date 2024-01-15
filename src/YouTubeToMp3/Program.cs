@@ -1,8 +1,10 @@
+using System.Diagnostics;
 using Cocona;
 using DotNetTools.SharpGrabber;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using YouTubeToMp3.Services;
+using YouTubeToMp3.Services.Convert;
 using YouTubeToMp3.Services.Facade;
 
 namespace YouTubeToMp3;
@@ -14,8 +16,10 @@ internal class Program
         CoconaApp.CreateHostBuilder()
             .ConfigureLogging(logging =>
             {
-                logging.AddConsole();
-                logging.AddDebug();
+#if RELEASE
+                logging.ClearProviders();
+#endif
+
             })
             .ConfigureServices(services =>
             {
@@ -30,8 +34,12 @@ internal class Program
                     return grabber;
                 });
 
-                services.AddHttpClient();
+                services.AddHttpClient<HttpClient>(client =>
+                {
+                    client.Timeout = TimeSpan.FromHours(1);
+                });
                 services.AddTransient<YouTubeFacade>();
+                services.AddTransient<DisplayTable>();
                 services.AddTransient<AudioRipper>();
                 services.AddTransient<ConvertYouTubeVideoToMp3>();
                 services.AddTransient<Application>();
@@ -39,11 +47,10 @@ internal class Program
             .Run<Program>(args);
     }
 
-    public async Task Run([FromService] Application app, [FromService] ILogger<Program> loggger,
+    public async Task Run([FromService] Application app,
         [Argument("A space delimited list of YouTube URLs to rip.")]
         IEnumerable<string> args)
     {
-        loggger.LogInformation("Received some arguments...");
         await app.Run(args);
     }
 }
